@@ -69,6 +69,50 @@ extern "C" {
     T5577_PWD |                   \
     (2 << T5577_MAXBLOCK_SHIFT))
 
+#define T5577_JABLOTRON_CONFIG (   \
+    T5577_BITRATE_RF_64 |          \
+    T5577_MODULATION_DIPHASE |     \
+    T5577_PWD |                    \
+    (2 << T5577_MAXBLOCK_SHIFT))
+
+#define T5577_FDXB_CONFIG (        \
+    T5577_BITRATE_RF_32 |          \
+    T5577_MODULATION_DIPHASE |     \
+    T5577_PWD |                    \
+    (4 << T5577_MAXBLOCK_SHIFT))
+
+#define T5577_IOPROX_CONFIG (      \
+    T5577_BITRATE_RF_64 |          \
+    T5577_MODULATION_FSK2a |       \
+    T5577_PWD |                    \
+    (2 << T5577_MAXBLOCK_SHIFT))
+
+#define T5577_PARADOX_CONFIG (     \
+    T5577_BITRATE_RF_50 |          \
+    T5577_MODULATION_FSK2a |       \
+    T5577_PWD |                    \
+    (3 << T5577_MAXBLOCK_SHIFT))
+
+#define T5577_INDALA_64_CONFIG (   \
+    T5577_BITRATE_RF_32 |          \
+    T5577_MODULATION_PSK1 |        \
+    T5577_PSKCF_RF_2 |             \
+    T5577_PWD |                    \
+    (2 << T5577_MAXBLOCK_SHIFT))
+
+#define T5577_INDALA_224_CONFIG (  \
+    T5577_BITRATE_RF_32 |          \
+    T5577_MODULATION_PSK1 |        \
+    T5577_PSKCF_RF_2 |             \
+    T5577_PWD |                    \
+    (7 << T5577_MAXBLOCK_SHIFT))
+
+#define T5577_PAC_CONFIG (         \
+    T5577_MODULATION_DIRECT |      \
+    T5577_BITRATE_RF_32 |          \
+    T5577_PWD |                    \
+    (4 << T5577_MAXBLOCK_SHIFT))
+
 void t55xx_write_data(uint32_t passwd, uint32_t *blks, uint8_t blk_count);
 void t55xx_reset_passwd(uint32_t old_passwd, uint32_t new_passwd);
 

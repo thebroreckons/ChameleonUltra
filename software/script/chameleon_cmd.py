@@ -535,6 +535,135 @@ class ChameleonCMD:
         return self.device.send_cmd_sync(Command.VIKING_WRITE_TO_T55XX, data)
 
     @expect_response(Status.LF_TAG_OK)
+    def ioprox_scan(self):
+        """
+        Read ioProx card data.
+
+        :return:
+        """
+        resp = self.device.send_cmd_sync(Command.IOPROX_SCAN)
+        if resp.status == Status.LF_TAG_OK:
+            resp.parsed = resp.data
+        return resp
+
+    @expect_response(Status.LF_TAG_OK)
+    def ioprox_write_to_t55xx(self, id_bytes: bytes):
+        """
+        Write ioProx card data into T55XX.
+
+        :param id_bytes: ID card number (8 bytes)
+        :return:
+        """
+        if len(id_bytes) != 8:
+            raise ValueError("The id bytes length must equal 8")
+        data = struct.pack(f'!8s4s{4*len(old_keys)}s', id_bytes, new_key, b''.join(old_keys))
+        return self.device.send_cmd_sync(Command.IOPROX_WRITE_TO_T55XX, data)
+
+    @expect_response(Status.LF_TAG_OK)
+    def jablotron_scan(self):
+        """
+        Read Jablotron card data.
+
+        :return:
+        """
+        resp = self.device.send_cmd_sync(Command.JABLOTRON_SCAN)
+        if resp.status == Status.LF_TAG_OK:
+            resp.parsed = resp.data
+        return resp
+
+    @expect_response(Status.LF_TAG_OK)
+    def jablotron_write_to_t55xx(self, id_bytes: bytes):
+        """
+        Write Jablotron card data into T55XX.
+
+        :param id_bytes: ID card number (5 bytes)
+        :return:
+        """
+        if len(id_bytes) != 5:
+            raise ValueError("The id bytes length must equal 5")
+        data = struct.pack(f'!5s4s{4*len(old_keys)}s', id_bytes, new_key, b''.join(old_keys))
+        return self.device.send_cmd_sync(Command.JABLOTRON_WRITE_TO_T55XX, data)
+
+    @expect_response(Status.LF_TAG_OK)
+    def paradox_scan(self):
+        """
+        Read Paradox card data.
+
+        :return:
+        """
+        resp = self.device.send_cmd_sync(Command.PARADOX_SCAN)
+        if resp.status == Status.LF_TAG_OK:
+            resp.parsed = resp.data
+        return resp
+
+    @expect_response(Status.LF_TAG_OK)
+    def paradox_write_to_t55xx(self, id_bytes: bytes):
+        """
+        Write Paradox card data into T55XX.
+
+        :param id_bytes: ID card number (6 bytes)
+        :return:
+        """
+        if len(id_bytes) != 6:
+            raise ValueError("The id bytes length must equal 6")
+        data = struct.pack(f'!6s4s{4*len(old_keys)}s', id_bytes, new_key, b''.join(old_keys))
+        return self.device.send_cmd_sync(Command.PARADOX_WRITE_TO_T55XX, data)
+
+    @expect_response(Status.LF_TAG_OK)
+    def fdxb_scan(self):
+        """
+        Read FDX-B card data.
+
+        :return:
+        """
+        resp = self.device.send_cmd_sync(Command.FDXB_SCAN)
+        if resp.status == Status.LF_TAG_OK:
+            resp.parsed = resp.data
+        return resp
+
+    @expect_response(Status.LF_TAG_OK)
+    def fdxb_write_to_t55xx(self, id_bytes: bytes):
+        """
+        Write FDX-B card data into T55XX.
+
+        :param id_bytes: ID card number (16 bytes)
+        :return:
+        """
+        if len(id_bytes) != 16:
+            raise ValueError("The id bytes length must equal 16")
+        data = struct.pack(f'!16s4s{4*len(old_keys)}s', id_bytes, new_key, b''.join(old_keys))
+        return self.device.send_cmd_sync(Command.FDXB_WRITE_TO_T55XX, data)
+
+    @expect_response(Status.LF_TAG_OK)
+    def indala_scan(self):
+        """
+        Read Indala card data (64-bit or 224-bit).
+
+        :return: tuple (is_224, id_bytes)
+        """
+        resp = self.device.send_cmd_sync(Command.INDALA_SCAN)
+        if resp.status == Status.LF_TAG_OK:
+            is_224 = resp.data[0] != 0
+            id_bytes = resp.data[1:]
+            resp.parsed = (is_224, id_bytes)
+        return resp
+
+    @expect_response(Status.LF_TAG_OK)
+    def indala_write_to_t55xx(self, id_bytes: bytes, is_224: bool = False):
+        """
+        Write Indala card data into T55XX.
+
+        :param id_bytes: ID card number (8 or 28 bytes)
+        :param is_224: True for 224-bit, False for 64-bit
+        :return:
+        """
+        expected_len = 28 if is_224 else 8
+        if len(id_bytes) != expected_len:
+            raise ValueError(f"The id bytes length must equal {expected_len}")
+        data = struct.pack(f'!B{expected_len}s4s{4*len(old_keys)}s', 1 if is_224 else 0, id_bytes, new_key, b''.join(old_keys))
+        return self.device.send_cmd_sync(Command.INDALA_WRITE_TO_T55XX, data)
+
+    @expect_response(Status.LF_TAG_OK)
     def adc_generic_read(self):
         """
         Read the ADC when the field is on.
@@ -742,6 +871,112 @@ class ChameleonCMD:
         Get the emulated Viking card id
         """
         resp = self.device.send_cmd_sync(Command.VIKING_GET_EMU_ID)
+        resp.parsed = resp.data
+        return resp
+
+    @expect_response(Status.SUCCESS)
+    def ioprox_set_emu_id(self, id: bytes):
+        if len(id) != 8:
+            raise ValueError("The id bytes length must equal 8")
+        return self.device.send_cmd_sync(Command.IOPROX_SET_EMU_ID, id)
+
+    @expect_response(Status.SUCCESS)
+    def ioprox_get_emu_id(self):
+        resp = self.device.send_cmd_sync(Command.IOPROX_GET_EMU_ID)
+        resp.parsed = resp.data
+        return resp
+
+    @expect_response(Status.SUCCESS)
+    def jablotron_set_emu_id(self, id: bytes):
+        if len(id) != 5:
+            raise ValueError("The id bytes length must equal 5")
+        return self.device.send_cmd_sync(Command.JABLOTRON_SET_EMU_ID, id)
+
+    @expect_response(Status.SUCCESS)
+    def jablotron_get_emu_id(self):
+        resp = self.device.send_cmd_sync(Command.JABLOTRON_GET_EMU_ID)
+        resp.parsed = resp.data
+        return resp
+
+    @expect_response(Status.SUCCESS)
+    def paradox_set_emu_id(self, id: bytes):
+        if len(id) != 6:
+            raise ValueError("The id bytes length must equal 6")
+        return self.device.send_cmd_sync(Command.PARADOX_SET_EMU_ID, id)
+
+    @expect_response(Status.SUCCESS)
+    def paradox_get_emu_id(self):
+        resp = self.device.send_cmd_sync(Command.PARADOX_GET_EMU_ID)
+        resp.parsed = resp.data
+        return resp
+
+    @expect_response(Status.SUCCESS)
+    def fdxb_set_emu_id(self, id: bytes):
+        if len(id) != 16:
+            raise ValueError("The id bytes length must equal 16")
+        return self.device.send_cmd_sync(Command.FDXB_SET_EMU_ID, id)
+
+    @expect_response(Status.SUCCESS)
+    def fdxb_get_emu_id(self):
+        resp = self.device.send_cmd_sync(Command.FDXB_GET_EMU_ID)
+        resp.parsed = resp.data
+        return resp
+
+    @expect_response(Status.SUCCESS)
+    def indala_set_emu_id(self, id: bytes):
+        lf_tag_type = self._get_active_lf_tag_type()
+        if lf_tag_type == TagSpecificType.Indala224:
+            expected_len = 28
+        elif lf_tag_type == TagSpecificType.Indala:
+            expected_len = 8
+        else:
+            raise ValueError(f"Active LF slot type {lf_tag_type} is not Indala")
+        if len(id) != expected_len:
+            raise ValueError(f"The id bytes length must equal {expected_len}")
+        return self.device.send_cmd_sync(Command.INDALA_SET_EMU_ID, id)
+
+    @expect_response(Status.SUCCESS)
+    def indala_get_emu_id(self):
+        resp = self.device.send_cmd_sync(Command.INDALA_GET_EMU_ID)
+        resp.parsed = resp.data
+        return resp
+
+    @expect_response(Status.LF_TAG_OK)
+    def pac_scan(self):
+        """
+        Read PAC/Stanley card data.
+
+        :return: id_bytes (8 bytes)
+        """
+        resp = self.device.send_cmd_sync(Command.PAC_SCAN)
+        if resp.status == Status.LF_TAG_OK:
+            resp.parsed = resp.data
+        return resp
+
+    @expect_response(Status.LF_TAG_OK)
+    def pac_write_to_t55xx(self, id_bytes: bytes, new_key: bytes = b'\x00\x00\x00\x00', old_keys: list[bytes] = []):
+        """
+        Write PAC/Stanley card data into T55XX.
+
+        :param id_bytes: ID card number (8 bytes)
+        :param new_key: New password for T55XX
+        :param old_keys: List of old passwords to try
+        :return:
+        """
+        if len(id_bytes) != 8:
+            raise ValueError("The id bytes length must equal 8")
+        data = struct.pack(f'!8s4s{4*len(old_keys)}s', id_bytes, new_key, b''.join(old_keys))
+        return self.device.send_cmd_sync(Command.PAC_WRITE_TO_T55XX, data)
+
+    @expect_response(Status.SUCCESS)
+    def pac_set_emu_id(self, id: bytes):
+        if len(id) != 8:
+            raise ValueError("The id bytes length must equal 8")
+        return self.device.send_cmd_sync(Command.PAC_SET_EMU_ID, id)
+
+    @expect_response(Status.SUCCESS)
+    def pac_get_emu_id(self):
+        resp = self.device.send_cmd_sync(Command.PAC_GET_EMU_ID)
         resp.parsed = resp.data
         return resp
 

@@ -32,12 +32,20 @@ SRC_FILES += \
   $(PROJ_DIR)/rfid/nfctag/hf/nfc_mf0_ntag.c \
   $(PROJ_DIR)/rfid/nfctag/lf/lf_tag_em.c \
   $(PROJ_DIR)/rfid/nfctag/lf/utils/fskdemod.c \
+  $(PROJ_DIR)/rfid/nfctag/lf/utils/biphase.c \
+  $(PROJ_DIR)/rfid/nfctag/lf/utils/pskdemod.c \
   $(PROJ_DIR)/rfid/nfctag/lf/utils/circular_buffer.c \
   $(PROJ_DIR)/rfid/nfctag/lf/utils/manchester.c \
   $(PROJ_DIR)/rfid/nfctag/lf/protocols/em410x.c \
   $(PROJ_DIR)/rfid/nfctag/lf/protocols/hidprox.c \
   $(PROJ_DIR)/rfid/nfctag/lf/protocols/viking.c \
   $(PROJ_DIR)/rfid/nfctag/lf/protocols/wiegand.c \
+  $(PROJ_DIR)/rfid/nfctag/lf/protocols/ioprox.c \
+  $(PROJ_DIR)/rfid/nfctag/lf/protocols/jablotron.c \
+  $(PROJ_DIR)/rfid/nfctag/lf/protocols/paradox.c \
+  $(PROJ_DIR)/rfid/nfctag/lf/protocols/fdxb.c \
+  $(PROJ_DIR)/rfid/nfctag/lf/protocols/indala.c \
+  $(PROJ_DIR)/rfid/nfctag/lf/protocols/pac.c \
   $(PROJ_DIR)/utils/dataframe.c \
   $(PROJ_DIR)/utils/delayed_reset.c \
   $(PROJ_DIR)/utils/fds_util.c \
@@ -345,6 +353,12 @@ ifeq	(${CURRENT_DEVICE_TYPE}, ${CHAMELEON_ULTRA})
     $(PROJ_DIR)/rfid/reader/lf/lf_t55xx_data.c \
     $(PROJ_DIR)/rfid/reader/lf/lf_hidprox_data.c \
     $(PROJ_DIR)/rfid/reader/lf/lf_viking_data.c \
+    $(PROJ_DIR)/rfid/reader/lf/lf_ioprox_data.c \
+    $(PROJ_DIR)/rfid/reader/lf/lf_jablotron_data.c \
+    $(PROJ_DIR)/rfid/reader/lf/lf_paradox_data.c \
+    $(PROJ_DIR)/rfid/reader/lf/lf_fdxb_data.c \
+    $(PROJ_DIR)/rfid/reader/lf/lf_indala_data.c \
+    $(PROJ_DIR)/rfid/reader/lf/lf_pac_data.c \
     $(PROJ_DIR)/rfid/reader/lf/lf_reader_generic.c \
 
   INC_FOLDERS +=\

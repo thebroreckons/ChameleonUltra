@@ -9,6 +9,12 @@
 #include "protocols/hidprox.h"
 #include "protocols/t55xx.h"
 #include "protocols/viking.h"
+#include "protocols/ioprox.h"
+#include "protocols/jablotron.h"
+#include "protocols/paradox.h"
+#include "protocols/fdxb.h"
+#include "protocols/indala.h"
+#include "protocols/pac.h"
 
 #define NRF_LOG_MODULE_NAME lf_main
 #include "nrf_log.h"
@@ -131,6 +137,148 @@ uint8_t write_viking_to_t55xx(uint8_t *uid, uint8_t *new_passwd, uint8_t *old_pa
 }
 
 /**
+ * Search ioProx tag
+ */
+uint8_t scan_ioprox(uint8_t *data) {
+    if (ioprox_read(data, g_timeout_readem_ms)) {
+        return STATUS_LF_TAG_OK;
+    }
+    return STATUS_LF_TAG_NO_FOUND;
+}
+
+/**
+ * Write ioProx card data to t55xx
+ */
+uint8_t write_ioprox_to_t55xx(uint8_t *data, uint8_t *new_passwd, uint8_t *old_passwds, uint8_t old_passwd_count) {
+    uint32_t blks[7] = {0x00};
+    uint8_t blk_count = ioprox_t55xx_writer(data, blks);
+    if (blk_count == 0) {
+        return STATUS_PAR_ERR;
+    }
+    return write_t55xx(blks, blk_count, new_passwd, old_passwds, old_passwd_count);
+}
+
+/**
+ * Search Jablotron tag
+ */
+uint8_t scan_jablotron(uint8_t *data) {
+    if (jablotron_read(data, g_timeout_readem_ms)) {
+        return STATUS_LF_TAG_OK;
+    }
+    return STATUS_LF_TAG_NO_FOUND;
+}
+
+/**
+ * Write Jablotron card data to t55xx
+ */
+uint8_t write_jablotron_to_t55xx(uint8_t *data, uint8_t *new_passwd, uint8_t *old_passwds, uint8_t old_passwd_count) {
+    uint32_t blks[7] = {0x00};
+    uint8_t blk_count = jablotron_t55xx_writer(data, blks);
+    if (blk_count == 0) {
+        return STATUS_PAR_ERR;
+    }
+    return write_t55xx(blks, blk_count, new_passwd, old_passwds, old_passwd_count);
+}
+
+/**
+ * Search Paradox tag
+ */
+uint8_t scan_paradox(uint8_t *data) {
+    if (paradox_read(data, g_timeout_readem_ms)) {
+        return STATUS_LF_TAG_OK;
+    }
+    return STATUS_LF_TAG_NO_FOUND;
+}
+
+/**
+ * Write Paradox card data to t55xx
+ */
+uint8_t write_paradox_to_t55xx(uint8_t *data, uint8_t *new_passwd, uint8_t *old_passwds, uint8_t old_passwd_count) {
+    uint32_t blks[7] = {0x00};
+    uint8_t blk_count = paradox_t55xx_writer(data, blks);
+    if (blk_count == 0) {
+        return STATUS_PAR_ERR;
+    }
+    return write_t55xx(blks, blk_count, new_passwd, old_passwds, old_passwd_count);
+}
+
+/**
+ * Search FDX-B tag
+ */
+uint8_t scan_fdxb(uint8_t *data) {
+    if (fdxb_read(data, g_timeout_readem_ms)) {
+        return STATUS_LF_TAG_OK;
+    }
+    return STATUS_LF_TAG_NO_FOUND;
+}
+
+/**
+ * Write FDX-B card data to t55xx
+ */
+uint8_t write_fdxb_to_t55xx(uint8_t *data, uint8_t *new_passwd, uint8_t *old_passwds, uint8_t old_passwd_count) {
+    uint32_t blks[7] = {0x00};
+    uint8_t blk_count = fdxb_t55xx_writer(data, blks);
+    if (blk_count == 0) {
+        return STATUS_PAR_ERR;
+    }
+    return write_t55xx(blks, blk_count, new_passwd, old_passwds, old_passwd_count);
+}
+
+/**
+ * Search Indala tag (64-bit or 224-bit)
+ */
+uint8_t scan_indala(uint8_t *data, bool *is_224) {
+    if (indala_64_read(data, g_timeout_readem_ms)) {
+        *is_224 = false;
+        return STATUS_LF_TAG_OK;
+    }
+    if (indala_224_read(data, g_timeout_readem_ms)) {
+        *is_224 = true;
+        return STATUS_LF_TAG_OK;
+    }
+    return STATUS_LF_TAG_NO_FOUND;
+}
+
+/**
+ * Write Indala card data to t55xx
+ */
+uint8_t write_indala_to_t55xx(uint8_t *data, bool is_224, uint8_t *new_passwd, uint8_t *old_passwds, uint8_t old_passwd_count) {
+    uint32_t blks[7] = {0x00};
+    uint8_t blk_count;
+    if (is_224) {
+        blk_count = indala_224_t55xx_writer(data, blks);
+    } else {
+        blk_count = indala_64_t55xx_writer(data, blks);
+    }
+    if (blk_count == 0) {
+        return STATUS_PAR_ERR;
+    }
+    return write_t55xx(blks, blk_count, new_passwd, old_passwds, old_passwd_count);
+}
+
+/**
  * Set the LF card scanning timeout value (in milliseconds).
  */
 void set_scan_tag_timeout(uint32_t ms) { g_timeout_readem_ms = ms; }
+
+/**
+ * Search PAC/Stanley tag
+ */
+uint8_t scan_pac(uint8_t *data) {
+    if (pac_read(data, g_timeout_readem_ms)) {
+        return STATUS_LF_TAG_OK;
+    }
+    return STATUS_LF_TAG_NO_FOUND;
+}
+
+/**
+ * Write PAC/Stanley card data to t55xx
+ */
+uint8_t write_pac_to_t55xx(uint8_t *data, uint8_t *new_passwd, uint8_t *old_passwds, uint8_t old_passwd_count) {
+    uint32_t blks[7] = {0x00};
+    uint8_t blk_count = pac_t55xx_writer(data, blks);
+    if (blk_count == 0) {
+        return STATUS_PAR_ERR;
+    }
+    return write_t55xx(blks, blk_count, new_passwd, old_passwds, old_passwd_count);
+}

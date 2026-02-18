@@ -554,6 +554,13 @@ lf_hid = lf.subgroup('hid', 'HID commands')
 lf_hid_prox = lf_hid.subgroup('prox', 'HID Prox commands')
 lf_viking = lf.subgroup('viking', 'Viking commands')
 lf_generic = lf.subgroup('generic', 'Generic commands')
+lf_ioprox = lf.subgroup('ioprox', 'ioProx commands')
+lf_jablotron = lf.subgroup('jablotron', 'Jablotron commands')
+lf_paradox = lf.subgroup('paradox', 'Paradox commands')
+lf_fdxb = lf.subgroup('fdxb', 'FDX-B commands')
+lf_indala = lf.subgroup('indala', 'Indala commands')
+lf_pac = lf.subgroup('pac', 'PAC/Stanley commands')
+
 
 @root.command('clear')
 class RootClear(BaseCLIUnit):
@@ -4518,6 +4525,314 @@ class LFVikingEconfig(SlotIndexArgsAndGoUnit, LFVikingIdArgsUnit):
             response = self.cmd.viking_get_emu_id()
             print(' - Get Viking tag id success.')
             print(f'ID: {response.hex().upper()}')
+
+# ===== ioProx Commands =====
+@lf_ioprox.command('read')
+class LFIoProxRead(ReaderRequiredUnit):
+    def args_parser(self) -> ArgumentParserNoExit:
+        parser = ArgumentParserNoExit()
+        parser.description = 'Scan ioProx tag and print id'
+        return parser
+
+    def on_exec(self, args: argparse.Namespace):
+        id = self.cmd.ioprox_scan()
+        print(f" ioProx: {color_string((CG, id.hex()))}")
+
+
+@lf_ioprox.command('write')
+class LFIoProxWriteT55xx(ReaderRequiredUnit):
+    def args_parser(self) -> ArgumentParserNoExit:
+        parser = ArgumentParserNoExit()
+        parser.description = 'Write ioProx id to t55xx'
+        parser.add_argument('-i', '--id', type=str, required=True, help="ioProx ID (4 bytes hex)")
+        return parser
+
+    def on_exec(self, args: argparse.Namespace):
+        id_bytes = bytes.fromhex(args.id)
+        self.cmd.ioprox_write_to_t55xx(id_bytes)
+        print(f" - ioProx ID: {args.id} write done.")
+
+
+@lf_ioprox.command('econfig')
+class LFIoProxEconfig(SlotIndexArgsAndGoUnit):
+    def args_parser(self) -> ArgumentParserNoExit:
+        parser = ArgumentParserNoExit()
+        parser.description = 'Set emulated ioProx card id'
+        self.add_slot_args(parser)
+        parser.add_argument('-i', '--id', type=str, required=False, help="ioProx ID (4 bytes hex)")
+        return parser
+
+    def on_exec(self, args: argparse.Namespace):
+        if args.id is not None:
+            slotinfo = self.cmd.get_slot_info()
+            selected = SlotNumber.from_fw(self.cmd.get_active_slot())
+            lf_tag_type = TagSpecificType(slotinfo[selected - 1]['lf'])
+            if lf_tag_type != TagSpecificType.IoProx:
+                print(f"{color_string((CR, 'WARNING'))}: Slot type not set to IoProx.")
+            self.cmd.ioprox_set_emu_id(bytes.fromhex(args.id))
+            print(' - Set ioProx tag id success.')
+        else:
+            response = self.cmd.ioprox_get_emu_id()
+            print(' - Get ioProx tag id success.')
+            print(f'ID: {response.hex().upper()}')
+
+
+# ===== Jablotron Commands =====
+@lf_jablotron.command('read')
+class LFJablotronRead(ReaderRequiredUnit):
+    def args_parser(self) -> ArgumentParserNoExit:
+        parser = ArgumentParserNoExit()
+        parser.description = 'Scan Jablotron tag and print id'
+        return parser
+
+    def on_exec(self, args: argparse.Namespace):
+        id = self.cmd.jablotron_scan()
+        print(f" Jablotron: {color_string((CG, id.hex()))}")
+
+
+@lf_jablotron.command('write')
+class LFJablotronWriteT55xx(ReaderRequiredUnit):
+    def args_parser(self) -> ArgumentParserNoExit:
+        parser = ArgumentParserNoExit()
+        parser.description = 'Write Jablotron id to t55xx'
+        parser.add_argument('-i', '--id', type=str, required=True, help="Jablotron ID (4 bytes hex)")
+        return parser
+
+    def on_exec(self, args: argparse.Namespace):
+        id_bytes = bytes.fromhex(args.id)
+        self.cmd.jablotron_write_to_t55xx(id_bytes)
+        print(f" - Jablotron ID: {args.id} write done.")
+
+
+@lf_jablotron.command('econfig')
+class LFJablotronEconfig(SlotIndexArgsAndGoUnit):
+    def args_parser(self) -> ArgumentParserNoExit:
+        parser = ArgumentParserNoExit()
+        parser.description = 'Set emulated Jablotron card id'
+        self.add_slot_args(parser)
+        parser.add_argument('-i', '--id', type=str, required=False, help="Jablotron ID (4 bytes hex)")
+        return parser
+
+    def on_exec(self, args: argparse.Namespace):
+        if args.id is not None:
+            slotinfo = self.cmd.get_slot_info()
+            selected = SlotNumber.from_fw(self.cmd.get_active_slot())
+            lf_tag_type = TagSpecificType(slotinfo[selected - 1]['lf'])
+            if lf_tag_type != TagSpecificType.Jablotron:
+                print(f"{color_string((CR, 'WARNING'))}: Slot type not set to Jablotron.")
+            self.cmd.jablotron_set_emu_id(bytes.fromhex(args.id))
+            print(' - Set Jablotron tag id success.')
+        else:
+            response = self.cmd.jablotron_get_emu_id()
+            print(' - Get Jablotron tag id success.')
+            print(f'ID: {response.hex().upper()}')
+
+
+# ===== Paradox Commands =====
+@lf_paradox.command('read')
+class LFParadoxRead(ReaderRequiredUnit):
+    def args_parser(self) -> ArgumentParserNoExit:
+        parser = ArgumentParserNoExit()
+        parser.description = 'Scan Paradox tag and print id'
+        return parser
+
+    def on_exec(self, args: argparse.Namespace):
+        id = self.cmd.paradox_scan()
+        print(f" Paradox: {color_string((CG, id.hex()))}")
+
+
+@lf_paradox.command('write')
+class LFParadoxWriteT55xx(ReaderRequiredUnit):
+    def args_parser(self) -> ArgumentParserNoExit:
+        parser = ArgumentParserNoExit()
+        parser.description = 'Write Paradox id to t55xx'
+        parser.add_argument('-i', '--id', type=str, required=True, help="Paradox ID (4 bytes hex)")
+        return parser
+
+    def on_exec(self, args: argparse.Namespace):
+        id_bytes = bytes.fromhex(args.id)
+        self.cmd.paradox_write_to_t55xx(id_bytes)
+        print(f" - Paradox ID: {args.id} write done.")
+
+
+@lf_paradox.command('econfig')
+class LFParadoxEconfig(SlotIndexArgsAndGoUnit):
+    def args_parser(self) -> ArgumentParserNoExit:
+        parser = ArgumentParserNoExit()
+        parser.description = 'Set emulated Paradox card id'
+        self.add_slot_args(parser)
+        parser.add_argument('-i', '--id', type=str, required=False, help="Paradox ID (4 bytes hex)")
+        return parser
+
+    def on_exec(self, args: argparse.Namespace):
+        if args.id is not None:
+            slotinfo = self.cmd.get_slot_info()
+            selected = SlotNumber.from_fw(self.cmd.get_active_slot())
+            lf_tag_type = TagSpecificType(slotinfo[selected - 1]['lf'])
+            if lf_tag_type != TagSpecificType.Paradox:
+                print(f"{color_string((CR, 'WARNING'))}: Slot type not set to Paradox.")
+            self.cmd.paradox_set_emu_id(bytes.fromhex(args.id))
+            print(' - Set Paradox tag id success.')
+        else:
+            response = self.cmd.paradox_get_emu_id()
+            print(' - Get Paradox tag id success.')
+            print(f'ID: {response.hex().upper()}')
+
+
+# ===== FDX-B Commands =====
+@lf_fdxb.command('read')
+class LFFdxbRead(ReaderRequiredUnit):
+    def args_parser(self) -> ArgumentParserNoExit:
+        parser = ArgumentParserNoExit()
+        parser.description = 'Scan FDX-B tag and print id'
+        return parser
+
+    def on_exec(self, args: argparse.Namespace):
+        id = self.cmd.fdxb_scan()
+        print(f" FDX-B: {color_string((CG, id.hex()))}")
+
+
+@lf_fdxb.command('write')
+class LFFdxbWriteT55xx(ReaderRequiredUnit):
+    def args_parser(self) -> ArgumentParserNoExit:
+        parser = ArgumentParserNoExit()
+        parser.description = 'Write FDX-B id to t55xx'
+        parser.add_argument('-i', '--id', type=str, required=True, help="FDX-B ID (8 bytes hex)")
+        return parser
+
+    def on_exec(self, args: argparse.Namespace):
+        id_bytes = bytes.fromhex(args.id)
+        self.cmd.fdxb_write_to_t55xx(id_bytes)
+        print(f" - FDX-B ID: {args.id} write done.")
+
+
+@lf_fdxb.command('econfig')
+class LFFdxbEconfig(SlotIndexArgsAndGoUnit):
+    def args_parser(self) -> ArgumentParserNoExit:
+        parser = ArgumentParserNoExit()
+        parser.description = 'Set emulated FDX-B card id'
+        self.add_slot_args(parser)
+        parser.add_argument('-i', '--id', type=str, required=False, help="FDX-B ID (8 bytes hex)")
+        return parser
+
+    def on_exec(self, args: argparse.Namespace):
+        if args.id is not None:
+            slotinfo = self.cmd.get_slot_info()
+            selected = SlotNumber.from_fw(self.cmd.get_active_slot())
+            lf_tag_type = TagSpecificType(slotinfo[selected - 1]['lf'])
+            if lf_tag_type != TagSpecificType.FDXB:
+                print(f"{color_string((CR, 'WARNING'))}: Slot type not set to FDXB.")
+            self.cmd.fdxb_set_emu_id(bytes.fromhex(args.id))
+            print(' - Set FDX-B tag id success.')
+        else:
+            response = self.cmd.fdxb_get_emu_id()
+            print(' - Get FDX-B tag id success.')
+            print(f'ID: {response.hex().upper()}')
+
+
+# ===== Indala Commands =====
+@lf_indala.command('read')
+class LFIndalaRead(ReaderRequiredUnit):
+    def args_parser(self) -> ArgumentParserNoExit:
+        parser = ArgumentParserNoExit()
+        parser.description = 'Scan Indala tag and print id (64-bit or 224-bit)'
+        return parser
+
+    def on_exec(self, args: argparse.Namespace):
+        is_224, id = self.cmd.indala_scan()
+        tag_type = "Indala-224" if is_224 else "Indala-64"
+        print(f" {tag_type}: {color_string((CG, id.hex()))}")
+
+
+@lf_indala.command('write')
+class LFIndalaWriteT55xx(ReaderRequiredUnit):
+    def args_parser(self) -> ArgumentParserNoExit:
+        parser = ArgumentParserNoExit()
+        parser.description = 'Write Indala id to t55xx'
+        parser.add_argument('-i', '--id', type=str, required=True, help="Indala ID (8 or 28 bytes hex)")
+        parser.add_argument('--224', action='store_true', help="Use 224-bit format")
+        return parser
+
+    def on_exec(self, args: argparse.Namespace):
+        id_bytes = bytes.fromhex(args.id)
+        self.cmd.indala_write_to_t55xx(id_bytes, is_224=getattr(args, '224', False))
+        print(f" - Indala ID: {args.id} write done.")
+
+
+@lf_indala.command('econfig')
+class LFIndalaEconfig(SlotIndexArgsAndGoUnit):
+    def args_parser(self) -> ArgumentParserNoExit:
+        parser = ArgumentParserNoExit()
+        parser.description = 'Set emulated Indala card id'
+        self.add_slot_args(parser)
+        parser.add_argument('-i', '--id', type=str, required=False, help="Indala ID (8 or 28 bytes hex)")
+        return parser
+
+    def on_exec(self, args: argparse.Namespace):
+        if args.id is not None:
+            slotinfo = self.cmd.get_slot_info()
+            selected = SlotNumber.from_fw(self.cmd.get_active_slot())
+            lf_tag_type = TagSpecificType(slotinfo[selected - 1]['lf'])
+            if lf_tag_type not in (TagSpecificType.Indala, TagSpecificType.Indala224):
+                print(f"{color_string((CR, 'WARNING'))}: Slot type not set to Indala.")
+            self.cmd.indala_set_emu_id(bytes.fromhex(args.id))
+            print(' - Set Indala tag id success.')
+        else:
+            response = self.cmd.indala_get_emu_id()
+            print(' - Get Indala tag id success.')
+            print(f'ID: {response.hex().upper()}')
+
+
+# ===== PAC/Stanley Commands =====
+@lf_pac.command('read')
+class LFPacRead(ReaderRequiredUnit):
+    def args_parser(self) -> ArgumentParserNoExit:
+        parser = ArgumentParserNoExit()
+        parser.description = 'Scan PAC/Stanley tag and print id'
+        return parser
+
+    def on_exec(self, args: argparse.Namespace):
+        id = self.cmd.pac_scan()
+        print(f" PAC/Stanley: {color_string((CG, id.hex()))}")
+
+
+@lf_pac.command('write')
+class LFPacWriteT55xx(ReaderRequiredUnit):
+    def args_parser(self) -> ArgumentParserNoExit:
+        parser = ArgumentParserNoExit()
+        parser.description = 'Write PAC/Stanley id to t55xx'
+        parser.add_argument('-i', '--id', type=str, required=True, help="PAC ID (8 bytes hex)")
+        return parser
+
+    def on_exec(self, args: argparse.Namespace):
+        id_bytes = bytes.fromhex(args.id)
+        self.cmd.pac_write_to_t55xx(id_bytes)
+        print(f" - PAC/Stanley ID: {args.id} write done.")
+
+
+@lf_pac.command('econfig')
+class LFPacEconfig(SlotIndexArgsAndGoUnit):
+    def args_parser(self) -> ArgumentParserNoExit:
+        parser = ArgumentParserNoExit()
+        parser.description = 'Set emulated PAC/Stanley card id'
+        self.add_slot_args(parser)
+        parser.add_argument('-i', '--id', type=str, required=False, help="PAC ID (8 bytes hex)")
+        return parser
+
+    def on_exec(self, args: argparse.Namespace):
+        if args.id is not None:
+            slotinfo = self.cmd.get_slot_info()
+            selected = SlotNumber.from_fw(self.cmd.get_active_slot())
+            lf_tag_type = TagSpecificType(slotinfo[selected - 1]['lf'])
+            if lf_tag_type != TagSpecificType.PAC:
+                print(f"{color_string((CR, 'WARNING'))}: Slot type not set to PAC.")
+            self.cmd.pac_set_emu_id(bytes.fromhex(args.id))
+            print(' - Set PAC/Stanley tag id success.')
+        else:
+            response = self.cmd.pac_get_emu_id()
+            print(' - Get PAC/Stanley tag id success.')
+            print(f'ID: {response.hex().upper()}')
+
 
 @hw_slot.command('nick')
 class HWSlotNick(SlotIndexArgsUnit, SenseTypeArgsUnit):

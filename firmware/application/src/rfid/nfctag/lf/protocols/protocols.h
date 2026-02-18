@@ -14,7 +14,7 @@ typedef uint8_t* (*codec_get_data)(void* codec);
 typedef void (*decoder_start)(void* codec, uint8_t format);
 typedef bool (*decoder_feed)(void* codec, uint16_t val);
 
-typedef nrf_pwm_sequence_t* (*modulator)(void* d, uint8_t* buf);
+typedef const nrf_pwm_sequence_t* (*modulator)(void* d, uint8_t* buf);
 
 typedef struct {
     decoder_start start;

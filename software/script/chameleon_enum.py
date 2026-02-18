@@ -83,6 +83,18 @@ class Command(enum.IntEnum):
     HIDPROX_WRITE_TO_T55XX = 3003
     VIKING_SCAN = 3004
     VIKING_WRITE_TO_T55XX = 3005
+    IOPROX_SCAN = 3010
+    IOPROX_WRITE_TO_T55XX = 3011
+    PARADOX_SCAN = 3012
+    PARADOX_WRITE_TO_T55XX = 3013
+    FDXB_SCAN = 3014
+    FDXB_WRITE_TO_T55XX = 3015
+    JABLOTRON_SCAN = 3016
+    JABLOTRON_WRITE_TO_T55XX = 3017
+    INDALA_SCAN = 3018
+    INDALA_WRITE_TO_T55XX = 3019
+    PAC_SCAN = 3020
+    PAC_WRITE_TO_T55XX = 3021
     ADC_GENERIC_READ = 3009
 
     MF1_WRITE_EMU_BLOCK_DATA = 4000
@@ -137,6 +149,18 @@ class Command(enum.IntEnum):
     HIDPROX_GET_EMU_ID = 5003
     VIKING_SET_EMU_ID = 5004
     VIKING_GET_EMU_ID = 5005
+    IOPROX_SET_EMU_ID = 5010
+    IOPROX_GET_EMU_ID = 5011
+    PARADOX_SET_EMU_ID = 5012
+    PARADOX_GET_EMU_ID = 5013
+    FDXB_SET_EMU_ID = 5014
+    FDXB_GET_EMU_ID = 5015
+    JABLOTRON_SET_EMU_ID = 5016
+    JABLOTRON_GET_EMU_ID = 5017
+    INDALA_SET_EMU_ID = 5018
+    INDALA_GET_EMU_ID = 5019
+    PAC_SET_EMU_ID = 5020
+    PAC_GET_EMU_ID = 5021
 
 
 @enum.unique
@@ -266,24 +290,31 @@ class TagSpecificType(enum.IntEnum):
     EM410X_32 = 102
     EM410X_64 = 103
     EM410X_ELECTRA = 104
-    # FDX-B
+    # FDX-B (ISO 11784/11785)
+    FDXB = 110
     # securakey
     # gallagher
     # PAC/Stanley
+    PAC = 150
     # Presco
     # Visa2000
     Viking = 170
     # Noralsy
     # Jablotron
+    Jablotron = 171
 
     # FSK Tag-Talk-First      200
     HIDProx = 200
-    # ioProx
+    # ioProx (Kantech XSF)
+    IoProx = 201
     # AWID
     # Paradox
+    Paradox = 202
 
     # PSK Tag-Talk-First      300
     # Indala
+    Indala = 300
+    Indala224 = 301
     # Keri
     # NexWatch
 
@@ -359,10 +390,24 @@ class TagSpecificType(enum.IntEnum):
             return "EM410X/64"
         elif self == TagSpecificType.EM410X_ELECTRA:
             return "EM410X Electra"
+        elif self == TagSpecificType.FDXB:
+            return "FDX-B"
+        elif self == TagSpecificType.PAC:
+            return "PAC/Stanley"
         elif self == TagSpecificType.HIDProx:
             return "HIDProx"
+        elif self == TagSpecificType.IoProx:
+            return "ioProx"
+        elif self == TagSpecificType.Paradox:
+            return "Paradox"
         elif self == TagSpecificType.Viking:
             return "Viking"
+        elif self == TagSpecificType.Jablotron:
+            return "Jablotron"
+        elif self == TagSpecificType.Indala:
+            return "Indala 64-bit"
+        elif self == TagSpecificType.Indala224:
+            return "Indala 224-bit"
         elif self == TagSpecificType.MIFARE_Mini:
             return "Mifare Mini"
         elif self == TagSpecificType.MIFARE_1024:

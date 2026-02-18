@@ -99,6 +99,19 @@
 #define DATA_CMD_GENERIC_READ                   (3007)
 #define DATA_CMD_CORR_GENERIC_READ              (3008)
 
+#define DATA_CMD_IOPROX_SCAN                    (3010)
+#define DATA_CMD_IOPROX_WRITE_TO_T55XX          (3011)
+#define DATA_CMD_PARADOX_SCAN                   (3012)
+#define DATA_CMD_PARADOX_WRITE_TO_T55XX         (3013)
+#define DATA_CMD_FDXB_SCAN                      (3014)
+#define DATA_CMD_FDXB_WRITE_TO_T55XX            (3015)
+#define DATA_CMD_JABLOTRON_SCAN                 (3016)
+#define DATA_CMD_JABLOTRON_WRITE_TO_T55XX       (3017)
+#define DATA_CMD_INDALA_SCAN                    (3018)
+#define DATA_CMD_INDALA_WRITE_TO_T55XX          (3019)
+#define DATA_CMD_PAC_SCAN                       (3020)
+#define DATA_CMD_PAC_WRITE_TO_T55XX             (3021)
+
 //
 // ******************************************************************
 
@@ -166,5 +179,18 @@
 #define DATA_CMD_HIDPROX_GET_EMU_ID             (5003)
 #define DATA_CMD_VIKING_SET_EMU_ID              (5004)
 #define DATA_CMD_VIKING_GET_EMU_ID              (5005)
+
+#define DATA_CMD_IOPROX_SET_EMU_ID              (5010)
+#define DATA_CMD_IOPROX_GET_EMU_ID              (5011)
+#define DATA_CMD_PARADOX_SET_EMU_ID             (5012)
+#define DATA_CMD_PARADOX_GET_EMU_ID             (5013)
+#define DATA_CMD_FDXB_SET_EMU_ID                (5014)
+#define DATA_CMD_FDXB_GET_EMU_ID                (5015)
+#define DATA_CMD_JABLOTRON_SET_EMU_ID           (5016)
+#define DATA_CMD_JABLOTRON_GET_EMU_ID           (5017)
+#define DATA_CMD_INDALA_SET_EMU_ID              (5018)
+#define DATA_CMD_INDALA_GET_EMU_ID              (5019)
+#define DATA_CMD_PAC_SET_EMU_ID                 (5020)
+#define DATA_CMD_PAC_GET_EMU_ID                 (5021)
 
 #endif

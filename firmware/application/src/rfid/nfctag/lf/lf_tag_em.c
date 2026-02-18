@@ -10,6 +10,12 @@
 #include "protocols/em410x.h"
 #include "protocols/hidprox.h"
 #include "protocols/viking.h"
+#include "protocols/ioprox.h"
+#include "protocols/jablotron.h"
+#include "protocols/paradox.h"
+#include "protocols/fdxb.h"
+#include "protocols/indala.h"
+#include "protocols/pac.h"
 #include "syssleep.h"
 #include "tag_emulation.h"
 #include "tag_persistence.h"
@@ -214,6 +220,69 @@ int lf_tag_data_loadcb(tag_specific_type_t type, tag_data_buffer_t *buffer) {
         return LF_VIKING_TAG_ID_SIZE;
     }
 
+    if (type == TAG_TYPE_IOPROX && buffer->length >= LF_IOPROX_TAG_ID_SIZE) {
+        m_tag_type = type;
+        void *codec = ioprox.alloc();
+        m_pwm_seq = ioprox.modulator(codec, buffer->buffer);
+        ioprox.free(codec);
+        NRF_LOG_INFO("load lf ioprox data finish.");
+        return LF_IOPROX_TAG_ID_SIZE;
+    }
+
+    if (type == TAG_TYPE_JABLOTRON && buffer->length >= LF_JABLOTRON_TAG_ID_SIZE) {
+        m_tag_type = type;
+        void *codec = jablotron.alloc();
+        m_pwm_seq = jablotron.modulator(codec, buffer->buffer);
+        jablotron.free(codec);
+        NRF_LOG_INFO("load lf jablotron data finish.");
+        return LF_JABLOTRON_TAG_ID_SIZE;
+    }
+
+    if (type == TAG_TYPE_PARADOX && buffer->length >= LF_PARADOX_TAG_ID_SIZE) {
+        m_tag_type = type;
+        void *codec = paradox.alloc();
+        m_pwm_seq = paradox.modulator(codec, buffer->buffer);
+        paradox.free(codec);
+        NRF_LOG_INFO("load lf paradox data finish.");
+        return LF_PARADOX_TAG_ID_SIZE;
+    }
+
+    if (type == TAG_TYPE_FDXB && buffer->length >= LF_FDXB_TAG_ID_SIZE) {
+        m_tag_type = type;
+        void *codec = fdxb.alloc();
+        m_pwm_seq = fdxb.modulator(codec, buffer->buffer);
+        fdxb.free(codec);
+        NRF_LOG_INFO("load lf fdxb data finish.");
+        return LF_FDXB_TAG_ID_SIZE;
+    }
+
+    if (type == TAG_TYPE_INDALA && buffer->length >= LF_INDALA_64_TAG_ID_SIZE) {
+        m_tag_type = type;
+        void *codec = indala_64.alloc();
+        m_pwm_seq = indala_64.modulator(codec, buffer->buffer);
+        indala_64.free(codec);
+        NRF_LOG_INFO("load lf indala 64 data finish.");
+        return LF_INDALA_64_TAG_ID_SIZE;
+    }
+
+    if (type == TAG_TYPE_INDALA_224 && buffer->length >= LF_INDALA_224_TAG_ID_SIZE) {
+        m_tag_type = type;
+        void *codec = indala_224.alloc();
+        m_pwm_seq = indala_224.modulator(codec, buffer->buffer);
+        indala_224.free(codec);
+        NRF_LOG_INFO("load lf indala 224 data finish.");
+        return LF_INDALA_224_TAG_ID_SIZE;
+    }
+
+    if (type == TAG_TYPE_PAC && buffer->length >= LF_PAC_TAG_ID_SIZE) {
+        m_tag_type = type;
+        void *codec = pac.alloc();
+        m_pwm_seq = pac.modulator(codec, buffer->buffer);
+        pac.free(codec);
+        NRF_LOG_INFO("load lf pac data finish.");
+        return LF_PAC_TAG_ID_SIZE;
+    }
+
     NRF_LOG_ERROR("no valid data exists in buffer for tag type: %d.", type);
     return 0;
 }
@@ -309,7 +378,70 @@ bool lf_tag_hidprox_data_factory(uint8_t slot, tag_specific_type_t tag_type) {
  * @return Whether the format is successful, if the formatting is successful, it will return to True, otherwise False will be returned
  */
 bool lf_tag_viking_data_factory(uint8_t slot, tag_specific_type_t tag_type) {
-    // default id
     uint8_t tag_id[4] = {0xDE, 0xAD, 0xBE, 0xEF};
+    return lf_tag_data_factory(slot, tag_type, tag_id, sizeof(tag_id));
+}
+
+int lf_tag_ioprox_data_savecb(tag_specific_type_t type, tag_data_buffer_t *buffer) {
+    return m_tag_type == TAG_TYPE_IOPROX ? LF_IOPROX_TAG_ID_SIZE : 0;
+}
+
+bool lf_tag_ioprox_data_factory(uint8_t slot, tag_specific_type_t tag_type) {
+    uint8_t tag_id[8] = {0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0xFD, 0x00};
+    return lf_tag_data_factory(slot, tag_type, tag_id, sizeof(tag_id));
+}
+
+int lf_tag_jablotron_data_savecb(tag_specific_type_t type, tag_data_buffer_t *buffer) {
+    return m_tag_type == TAG_TYPE_JABLOTRON ? LF_JABLOTRON_TAG_ID_SIZE : 0;
+}
+
+bool lf_tag_jablotron_data_factory(uint8_t slot, tag_specific_type_t tag_type) {
+    uint8_t tag_id[5] = {0x12, 0x34, 0x56, 0x78, 0x9A};
+    return lf_tag_data_factory(slot, tag_type, tag_id, sizeof(tag_id));
+}
+
+int lf_tag_paradox_data_savecb(tag_specific_type_t type, tag_data_buffer_t *buffer) {
+    return m_tag_type == TAG_TYPE_PARADOX ? LF_PARADOX_TAG_ID_SIZE : 0;
+}
+
+bool lf_tag_paradox_data_factory(uint8_t slot, tag_specific_type_t tag_type) {
+    uint8_t tag_id[6] = {0x00, 0x01, 0x00, 0x00, 0x00, 0x01};
+    return lf_tag_data_factory(slot, tag_type, tag_id, sizeof(tag_id));
+}
+
+int lf_tag_fdxb_data_savecb(tag_specific_type_t type, tag_data_buffer_t *buffer) {
+    return m_tag_type == TAG_TYPE_FDXB ? LF_FDXB_TAG_ID_SIZE : 0;
+}
+
+bool lf_tag_fdxb_data_factory(uint8_t slot, tag_specific_type_t tag_type) {
+    uint8_t tag_id[16] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                          0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    return lf_tag_data_factory(slot, tag_type, tag_id, sizeof(tag_id));
+}
+
+int lf_tag_indala_data_savecb(tag_specific_type_t type, tag_data_buffer_t *buffer) {
+    if (m_tag_type == TAG_TYPE_INDALA) return LF_INDALA_64_TAG_ID_SIZE;
+    if (m_tag_type == TAG_TYPE_INDALA_224) return LF_INDALA_224_TAG_ID_SIZE;
+    return 0;
+}
+
+bool lf_tag_indala_data_factory(uint8_t slot, tag_specific_type_t tag_type) {
+    if (tag_type == TAG_TYPE_INDALA) {
+        uint8_t tag_id[8] = {0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00};
+        return lf_tag_data_factory(slot, tag_type, tag_id, sizeof(tag_id));
+    }
+    if (tag_type == TAG_TYPE_INDALA_224) {
+        uint8_t tag_id[28] = {0};
+        return lf_tag_data_factory(slot, tag_type, tag_id, sizeof(tag_id));
+    }
+    return false;
+}
+
+int lf_tag_pac_data_savecb(tag_specific_type_t type, tag_data_buffer_t *buffer) {
+    return m_tag_type == TAG_TYPE_PAC ? LF_PAC_TAG_ID_SIZE : 0;
+}
+
+bool lf_tag_pac_data_factory(uint8_t slot, tag_specific_type_t tag_type) {
+    uint8_t tag_id[8] = {0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0};
     return lf_tag_data_factory(slot, tag_type, tag_id, sizeof(tag_id));
 }
